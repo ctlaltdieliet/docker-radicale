@@ -48,6 +48,9 @@ Enhanced Docker image for <a href="https://radicale.org">Radicale</a>, the CalDA
 - [Running behind Caddy](#running-behind-caddy)
 - [Contributing](#contributing)
 - [Releasing](#releasing)
+  - [Updating Radicale (automated)](#updating-radicale-automated)
+  - [Releasing a change to the image itself](#releasing-a-change-to-the-image-itself)
+  - [Maintenance](#maintenance)
 - [Contributors](#contributors)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -57,7 +60,7 @@ Enhanced Docker image for <a href="https://radicale.org">Radicale</a>, the CalDA
 * :closed_lock_with_key: **Secured**: the container is read-only, with only access to its data dir, and without extraneous privileges
 * :fire: **Safe**: run as a normal user (not root)
 * :building_construction: **Multi-architecture**: run on amd64 and arm64
-* :gear: **Easy configuration**: configure Radicale using environment variables (e.g., `RADICALE_SERVER_HOSTS=0.0.0.0:5232`)
+* :gear: **Easy configuration**: configure Radicale using environment variables (e.g., `RADICALE_CONFIG_SERVER_HOSTS=0.0.0.0:5232`)
 * :sparkles: **Batteries included**:
     * git and ssh included for [versioning](https://github.com/tomsquest/docker-radicale/#versioning-with-git)
     * Python ldap3 for [LDAP authentication](https://github.com/Kozea/Radicale/wiki/LDAP-authentication)
@@ -154,18 +157,18 @@ You can configure Radicale in two ways:
 
 ### Option 1: Using environment variables (recommended for simple configurations)
 
-You can configure Radicale using environment variables without mounting a config file. Environment variables starting with `RADICALE_` will automatically update the configuration file at container startup.
+You can configure Radicale using environment variables without mounting a config file. Environment variables starting with `RADICALE_CONFIG_` will automatically update the configuration file at container startup.
 
-The format is: `RADICALE_SECTION_KEY=value`
+The format is: `RADICALE_CONFIG_SECTION_KEY=value`
 
 Examples:
 
 ```bash
 docker run -d --name radicale \
     -p 5232:5232 \
-    -e RADICALE_SERVER_HOSTS=0.0.0.0:5232 \
-    -e RADICALE_AUTH_TYPE=none \
-    -e RADICALE_STORAGE_FILESYSTEM_FOLDER=/data/collections \
+    -e RADICALE_CONFIG_SERVER_HOSTS=0.0.0.0:5232 \
+    -e RADICALE_CONFIG_AUTH_TYPE=none \
+    -e RADICALE_CONFIG_STORAGE_FILESYSTEM_FOLDER=/data/collections \
     -v ./data:/data \
     tomsquest/docker-radicale
 ```
@@ -173,8 +176,7 @@ docker run -d --name radicale \
 ⚠️ Notes:
 
 1. Setting environment variables will rewrite the config file, removing any comments.
-2. Environment variables don't work with `--read-only` containers. Use a custom config file instead (see Option 2 below).
-3. Use exact case for values (e.g., `True`, not `true`). Check the [config file](config) for correct casing.
+2. Use exact case for values (e.g., `True`, not `true`). Check the [config file](config) for correct casing.
 
 ### Option 2: Using a custom config file
 
@@ -182,9 +184,9 @@ To change Radicale configuration, first get the config file:
 
 * use this preconfigured [config file](config) from this repository,
 * Or, use [the original Radicale config file](https://raw.githubusercontent.com/Kozea/Radicale/master/config) and:
-    1. set `hosts = 0.0.0.0:5232`
-    2. set `filesystem_folder = /data/collections`
-    3. set `[auth] type = none`
+    1. in `[server]`, set `hosts = 0.0.0.0:5232`
+    2. in `[storage]`, set `filesystem_folder = /data/collections`
+    3. in `[auth]`, set `type = none`
 
 Then:
 
@@ -381,28 +383,50 @@ radicale.yourdomain.com {
 
 ## Contributing
 
-To run the tests:
-
 1. `uv sync`
-2. `uv run pytest -v`
+2. `uv run pre-commit install`
+3. `uv run pre-commit run --all-files`
 
 ## Releasing
 
-```bash
-# Update local tags
-git fetch --all --tags
-# Update `CHANGELOG.md` (after the PR is merged)
-...
-# Create tag
-TAG=1.2.3.4 && git tag $TAG && git push origin $TAG
-# Draft a new release
-xdg-open https://github.com/tomsquest/docker-radicale/releases/new
-```
+Versions are named after Radicale, plus a fourth digit for this image's own revisions:
+Radicale `3.8.0` is released as `3.8.0.0`, and a later fix to the image alone as `3.8.0.1`.
 
-Note: the `latest` tag is generated automatically on each push (and daily).
+### Updating Radicale (automated)
+
+Every morning, the `bump_radicale` workflow compares the latest Radicale on PyPI with the
+version in the `Dockerfile`. When a new one is out, it opens a pull request updating the
+`Dockerfile`, `test_image_prod.py` and `CHANGELOG.md`.
+
+**Merging that pull request is the whole release.** Once merged, the `tag_release` workflow
+tags `X.Y.Z.0`, creates the GitHub release from the `CHANGELOG.md` entry, and the tag pushes
+the image to Docker Hub.
+
+The workflow can also be run on demand from the Actions tab, optionally with a version to
+update to, to release a version that was skipped. A version older than the one currently
+pinned is rejected: `master` must not go backwards, or `latest` would downgrade with it.
+
+### Releasing a change to the image itself
+
+Changes that do not update Radicale (a fix to the entrypoint, a new package...) are published
+manually, when they are worth a fixed version:
+[draft a new release](https://github.com/tomsquest/docker-radicale/releases/new) with the next
+revision as the tag, e.g. `3.8.0.1`. Creating the tag builds and pushes the image.
+
+Note: the `latest` tag is generated automatically on each push (and daily), so such a change is
+already available there beforehand.
+
+### Maintenance
+
+Both workflows authenticate with a fine-grained personal access token stored as the
+`RELEASE_TOKEN` repository secret, with `Contents` and `Pull requests` write access. A plain
+`GITHUB_TOKEN` would not do: pull requests and tags it creates do not trigger the build and
+release workflows. The token expires, and `bump_radicale` fails when it does.
 
 ## Contributors
 
+* [Echo Nar](https://github.com/lethedata): support env config with read-only container
+* [Coen](https://github.com/x-real-ip): fix for non-writable config
 * [Oscar Carlsson](https://github.com/oscarcarlsson): update Radicale to 3.5.5
 * [Emil Miller](https://github.com/realcharmer): update Radicale to 3.3.0
 * [Nate Harris](https://github.com/nwithan8): add image to Unraid community app store

@@ -4,6 +4,109 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [3.8.1.1] - 2026-09-26
+
+## Added
+
+- Support env config with read-only container (#243)
+
+## [3.8.1.0] - 2026-09-25
+
+## Changed
+
+- [Update to Radicale 3.8.1](https://github.com/Kozea/Radicale/releases/tag/v3.8.1)
+
+## [3.8.0.0] - 2026-09-04
+
+## Changed
+
+- [Update to Radicale 3.8.0](https://github.com/Kozea/Radicale/releases/tag/v3.8.0)
+
+## [3.7.8.0] - 2026-09-04
+
+## Changed
+
+- [Update to Radicale 3.7.8](https://github.com/Kozea/Radicale/releases/tag/v3.7.8)
+
+## [3.7.7.0] - 2026-09-04
+
+## Changed
+
+- [Update to Radicale 3.7.7](https://github.com/Kozea/Radicale/releases/tag/v3.7.7)
+
+## [3.7.6.0] - 2026-07-14
+
+## Changed
+
+- [Update to Radicale 3.7.6](https://github.com/tomsquest/docker-radicale/pull/236)
+
+## [3.7.5.0] - 2026-06-22
+
+## Changed
+
+- [Update to Radicale 3.7.5](https://github.com/tomsquest/docker-radicale/pull/235)
+
+## [3.7.4.0] - 2026-06-22
+
+## Changed
+
+- [Update to Radicale 3.7.4](https://github.com/tomsquest/docker-radicale/pull/233)
+
+## [3.7.3.0] - 2026-05-15
+
+## Changed
+
+- [Update to Radicale 3.7.3](https://github.com/tomsquest/docker-radicale/pull/232)
+
+## [3.7.2.0] - 2026-05-06
+
+## Changed
+
+- [Update to Radicale 3.7.2](https://github.com/tomsquest/docker-radicale/pull/228)
+
+## [3.7.1.0] - 2026-04-22
+
+## Changed
+
+- [Update to Radicale 3.7.1](https://github.com/tomsquest/docker-radicale/pull/227)
+
+## [3.7.0.0] - 2026-04-22
+
+## Changed
+
+- [Update to Radicale 3.7.0](https://github.com/tomsquest/docker-radicale/pull/226)
+
+## [3.6.1.0] - 2026-02-26
+
+## Changed
+
+- [Update to Radicale 3.6.1](https://github.com/tomsquest/docker-radicale/pull/221)
+
+## [3.6.0.0] - 2026-01-14
+
+## Changed
+
+- [Update to Radicale 3.6.0](https://github.com/tomsquest/docker-radicale/pull/219)
+
+## [3.5.10.0] - 2025-12-21
+
+## Changed
+
+- [Update to Radicale 3.5.10](https://github.com/tomsquest/docker-radicale/pull/217)
+
+## [3.5.9.0] - 2025-12-05
+
+## Changed
+
+- [Update to Radicale 3.5.9](https://github.com/tomsquest/docker-radicale/pull/215)
+
+## [3.5.8.2] - 2025-11-19
+
+## Changed
+
+- [Avoid writing to read-only config files on Kubernetes ConfigMaps](https://github.com/tomsquest/docker-radicale/pull/212)
+- [Change env var prefix to avoid conflict from `RADICALE_` to `RADICALE_CONFIG_`](https://github.com/tomsquest/docker-radicale/pull/214)
+
 ## [3.5.8.1] - 2025-11-16
 
 ## Added

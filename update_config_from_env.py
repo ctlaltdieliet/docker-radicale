@@ -2,26 +2,29 @@
 """
 Update Radicale configuration from environment variables.
 
-Environment variables starting with RADICALE_ will be used to update
-the configuration file. The format is: RADICALE_SECTION_KEY=value
+Environment variables starting with RADICALE_CONFIG_ will be used to update
+the configuration file. The format is: RADICALE_CONFIG_SECTION_KEY=value
 
 Examples:
-  RADICALE_SERVER_HOSTS=0.0.0.0:5232
-  RADICALE_AUTH_TYPE=none
-  RADICALE_STORAGE_FILESYSTEM_FOLDER=/data/collections
+  RADICALE_CONFIG_SERVER_HOSTS=0.0.0.0:5232
+  RADICALE_CONFIG_AUTH_TYPE=none
+  RADICALE_CONFIG_STORAGE_FILESYSTEM_FOLDER=/data/collections
 """
 
 import os
 from configparser import ConfigParser
 from pathlib import Path
 
-ENV_PREFIX = "RADICALE_"
+ENV_PREFIX = "RADICALE_CONFIG_"
 
 
 def update_config_from_env(config_path: str):
     config_file = Path(config_path)
     if not config_file.exists():
         print(f"Error: Config file {config_path} does not exist")
+        return
+    if not os.access(config_file, os.R_OK | os.W_OK):
+        print(f"Error: Config file {config_path} is not readable or writable")
         return
 
     config = ConfigParser()
@@ -44,7 +47,7 @@ def update_config_from_env(config_path: str):
             config.add_section(section)
 
         config.set(section, key, value)
-        print(f"Updated [{section}] {key} = {value}")
+        print(f"Updated [{section}] {key}")
         changes_made = True
 
     if changes_made:
